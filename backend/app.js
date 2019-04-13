@@ -2,6 +2,8 @@ const express = require('express');
 
 const app = express();
 
+// This middleware grants access to all external requests.
+// Avoid CORS error.
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader(
