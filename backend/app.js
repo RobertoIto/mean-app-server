@@ -1,13 +1,17 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // This middleware grants access to all external requests.
 // Avoid CORS error.
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader(
-        'Access-Control-Allow-Header', 
+        'Access-Control-Allow-Headers', 
         'Origin, X-Requested-With, Content-Type, Accept'
     );
     res.setHeader(
@@ -22,7 +26,7 @@ app.use((req, res, next) => {
 //     next();
 // });
 
-app.use('/api/posts', (req, res, next) => {
+app.get('/api/posts', (req, res, next) => {
     const posts = [
         { id: '1', title: 'First server-side post', content: 'This is coming from the server 1.' },
         { id: '2', title: 'Second server-side post', content: 'This is coming from the server 2.' }
@@ -31,6 +35,14 @@ app.use('/api/posts', (req, res, next) => {
         message: 'Post fetched successfully!',
         posts: posts
     });
+});
+
+app.post("/api/posts", (req, res, next) => {
+    const posts = req.body;
+    console.log(posts);
+    res.status(201).json({
+        message: 'Post added successfully'
+    })
 });
 
 module.exports = app;
