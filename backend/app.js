@@ -38,14 +38,19 @@ app.use((req, res, next) => {
 // });
 
 app.get('/api/posts', (req, res, next) => {
-    const posts = [
-        { id: '1', title: 'First server-side post', content: 'This is coming from the server 1.' },
-        { id: '2', title: 'Second server-side post', content: 'This is coming from the server 2.' }
-    ];
-    return res.status(200).json({
-        message: 'Post fetched successfully!',
-        posts: posts
-    });
+    // const posts = [
+        // { id: '1', title: 'First server-side post', content: 'This is coming from the server 1.' },
+        // { id: '2', title: 'Second server-side post', content: 'This is coming from the server 2.' }
+    // ];
+
+    Post.find()
+        .then(documents => {
+            //console.log(documents);
+            res.status(200).json({
+                message: 'Post fetched successfully!',
+                posts: documents
+            });
+        });
 });
 
 app.post("/api/posts", (req, res, next) => {
