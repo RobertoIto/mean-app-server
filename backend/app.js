@@ -32,11 +32,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.use((req, res, next) => {
-//     console.log('First middleware');
-//     next();
-// });
-
 app.get('/api/posts', (req, res, next) => {
     // const posts = [
         // { id: '1', title: 'First server-side post', content: 'This is coming from the server 1.' },
@@ -59,9 +54,12 @@ app.post("/api/posts", (req, res, next) => {
         content: req.body.content
     });
     console.log(post);
-    post.save();
-    res.status(201).json({
-        message: 'Post added successfully'
+    post.save().then(createdPost => {
+        //console.log(result);
+        res.status(201).json({
+            message: 'Post added successfully',
+            postId: createdPost._id
+        });
     })
 });
 
