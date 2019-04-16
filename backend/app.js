@@ -6,7 +6,10 @@ const Post = require('./models/post');
 
 const app = express();
 
-mongoose.connect("mongodb://localhost:27017/mean-db?retryWrites=true")
+// Local connection
+// mongoose.connect("mongodb://localhost:27017/mean-db?retryWrites=true")
+// Cloud connection mongoDB Atlas
+mongoose.connect("mongodb+srv://rito:ZzPZCTkFuolGKVKF@cluster0-g8o4u.mongodb.net/test?retryWrites=true")
     .then(() => {
         console.log('Connected to database!');
     })
