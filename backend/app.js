@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -19,6 +20,7 @@ mongoose.connect("mongodb+srv://rito:ZzPZCTkFuolGKVKF@cluster0-g8o4u.mongodb.net
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use("/images", express.static(path.join("backend/images")));
 
 // This middleware grants access to all external requests.
 // Avoid CORS error.
