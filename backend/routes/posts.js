@@ -4,6 +4,7 @@ const multer = require('multer');
 const router = express.Router();
 
 const Post = require('../models/post');
+const checkAuth = require('../middleware/check-auth');
 
 const MIME_TYPE_MAP = {
     'image/png': 'png',
@@ -67,7 +68,8 @@ router.get("/:id", (req, res, next) => {
 });
 
 router.post(
-    "", 
+    "",
+    checkAuth,
     multer({storage: storage}).single('image'), 
     (req, res, next) => {
         const url = req.protocol + '://' + req.get('host');
@@ -96,7 +98,8 @@ router.post(
 );
 
 router.put(
-    "/:id", 
+    "/:id",
+    checkAuth,
     multer({storage: storage}).single('image'), 
     (req, res, next) => {
         let vImagePath = req.body.imagePath;
@@ -117,7 +120,10 @@ router.put(
     }
 );
 
-router.delete("/:id", (req, res, next) => {
+router.delete(
+    "/:id",
+    checkAuth, 
+    (req, res, next) => {
     //console.log(req.params.id);
     Post.deleteOne({_id: req.params.id}).then(result => {
         console.log(result);
