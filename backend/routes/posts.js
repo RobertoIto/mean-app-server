@@ -41,11 +41,17 @@ router.get("", (req, res, next) => {
     postQuery.then(documents => {
         fetchedPosts = documents;
         return Post.count();
-    }).then(count => {
+    })
+    .then(count => {
         res.status(200).json({
             message: 'Post fetched successfully!',
             posts: fetchedPosts,
             maxPosts: count
+        });
+    })
+    .catch(error => {
+        res.status(500).json ({
+            message: 'Fetching posts failed!'
         });
     });
 });
@@ -64,6 +70,11 @@ router.get("/:id", (req, res, next) => {
                     message: 'Post not found!'
                 });
             }
+        })
+        .catch(error => {
+            res.status(500).json ({
+                message: 'Fetching posts failed!'
+            });
         });
 });
 
@@ -76,24 +87,31 @@ router.post(
         const post = new Post({        
             title: req.body.title,
             content: req.body.content,
-            imagePath: url + '/images/' + req.file.filename
+            imagePath: url + '/images/' + req.file.filename,
+            creator: req.userData.userId
         });
-        console.log(post);
-        post.save().then(createdPost => {
-            //console.log(result);
-            res.status(201).json({
-                message: 'Post added successfully',
-                post: {
-                    // id: createdPost._id,
-                    // title: createdPost.title,
-                    // content: createdPost.content,
-                    // imagePath: createdPost.imagePath
-                    // or
-                    ...createdPost,
-                    id: createdPost._id
-                }
-            });
-        })
+        //console.log(post);
+        post.save()
+            .then(createdPost => {
+                //console.log(result);
+                res.status(201).json({
+                    message: 'Post added successfully',
+                    post: {
+                        // id: createdPost._id,
+                        // title: createdPost.title,
+                        // content: createdPost.content,
+                        // imagePath: createdPost.imagePath
+                        // or
+                        ...createdPost,
+                        id: createdPost._id
+                    }
+                });
+            })
+            .catch(error => {
+                res.status(500).json({
+                    message: 'Creating post failed!'
+                })
+            })
     }
 );
 
@@ -111,12 +129,22 @@ router.put(
             _id: req.body.id,
             title: req.body.title,
             content: req.body.content,
-            imagePath: vImagePath
+            imagePath: vImagePath,
+            creator: req.userData.userId
         });
-        Post.updateOne({_id: req.params.id}, post).then(result => {
-            console.log(result);
-            res.status(200).json({message: 'Update successful!'});
-        });
+        Post.updateOne({_id: req.params.id, creator: req.userData.userId}, post)
+            .then(result => {
+                if (result.nModified > 0) {
+                    res.status(200).json({message: 'Update successful!'});
+                } else {
+                    res.status(401).json({message: 'Not authorized!'});
+                }
+            })
+            .catch(error => {
+                res.status(500).json({
+                    message: 'Could not update post'
+                })
+            });
     }
 );
 
@@ -125,10 +153,19 @@ router.delete(
     checkAuth, 
     (req, res, next) => {
     //console.log(req.params.id);
-    Post.deleteOne({_id: req.params.id}).then(result => {
-        console.log(result);
-        res.status(200).json({ message: "Post deleted!" });
-    });
+    Post.deleteOne({_id: req.params.id, creator: req.userData.userId})
+        .then(result => {
+            if (result.deletedCount > 0) {
+                res.status(200).json({message: 'Deletion successful!'});
+            } else {
+                res.status(401).json({message: 'Not authorized!'});
+            }
+        })
+        .catch(error => {
+            res.status(500).json ({
+                message: 'Fetching posts failed!'
+            });
+        });
 });
 
 module.exports = router;
