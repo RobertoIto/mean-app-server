@@ -13,7 +13,10 @@ const app = express();
 // Cloud connection mongoDB Atlas without bcrypt
 //mongoose.connect("mongodb+srv://rito:ZzPZCTkFuolGKVKF@cluster0-g8o4u.mongodb.net/test?retryWrites=true")
 // Cloud connection mongoDB Atlas with bcrypt
-mongoose.connect("mongodb+srv://rito:ZzPZCTkFuolGKVKF@cluster0-g8o4u.mongodb.net/test")
+mongoose.connect(
+    "mongodb+srv://rito:" + 
+        process.env.MONGO_ATLAS_PW + 
+        "@cluster0-g8o4u.mongodb.net/test")
     .then(() => {
         console.log('Connected to database!');
     })
@@ -23,7 +26,7 @@ mongoose.connect("mongodb+srv://rito:ZzPZCTkFuolGKVKF@cluster0-g8o4u.mongodb.net
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use("/images", express.static(path.join("backend/images")));
+app.use("/images", express.static(path.join("images")));
 
 // This middleware grants access to all external requests.
 // Avoid CORS error.
